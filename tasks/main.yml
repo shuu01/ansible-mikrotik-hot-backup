@@ -1,0 +1,51 @@
+---
+- name: export master
+  connection: paramiko
+  raw: '/{{ item }} export;'
+  register: export
+  loop: '{{ mikrotik_config }}'
+  when: mikrotik_vrrp_master|bool
+
+- name: save master
+  local_action:
+    module: copy
+    content: '{{ item.stdout }}'
+    dest: '/tmp/{{ item.item }}.rsc'
+  loop: '{{ export.results }}'
+  no_log: true
+  when: mikrotik_vrrp_master|bool
+
+- name: replace ip
+  local_action:
+    module: replace
+    path: '/tmp/{{ item }}.rsc'
+    regexp: '^add.*[^<].*(name=default|comment=vrrp).*[\n]?(?!add).*$'
+    replace: ''
+  loop: '{{ mikrotik_config }}'
+  when: mikrotik_vrrp_master|bool
+
+- name: copy
+  local_action:
+    command sshpass -p {{ ansible_ssh_pass }} scp "/tmp/{{ item }}.rsc" {{ ansible_user }}@{{ ansible_host }}:"/{{ item }}.rsc"
+  loop: '{{ mikrotik_config }}'
+  when: mikrotik_vrrp_master| default(false)| bool == false
+
+- name: remove all except vrrp
+  connection: paramiko
+  raw: '/{{ item }} remove [/{{ item }} find where comment!="vrrp" and (name~"default" = false)]'
+  loop: '{{ mikrotik_config }}'
+  when: mikrotik_vrrp_master| default(false)| bool == false
+
+- name: remove routes
+  connection: paramiko
+  raw: '/{{ item }} remove [/{{ item }} find where comment!="vrrp" and static=yes]'
+  loop: '{{ mikrotik_config }}'
+  when: mikrotik_vrrp_master| default(false)| bool == false and item == "ip route"
+
+- name: import
+  connection: paramiko
+  raw: '/import "{{ item }}.rsc"'
+  loop: '{{ mikrotik_config }}'
+  when: mikrotik_vrrp_master| default(false)| bool == false
+
+
