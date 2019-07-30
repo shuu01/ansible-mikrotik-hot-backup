@@ -3,34 +3,33 @@ mikrotik_vrrp_master: false
 
 # order is important!!
 mikrotik_config:
+  - interface gre
+  - interface vlan
 
-#- interface gre
-#- interface vlan
+  - ip pool
+  - ip dhcp-server
+  - ppp profile
+  - ppp secret
+  - interface pptp-server
+  - interface l2tp-server
 
-#- ip pool
-#- ip dhcp-server
-#- ppp profile
-#- ppp secret
-#- interface pptp-server
-#- interface l2tp-server
+  - queue simple
+  - routing bgp instance
+  - routing bgp peer
+  - routing filter
+  - routing prefix-lists
+  - radius
 
-#- queue simple
-#- routing bgp instance
-#- routing bgp peer
-#- routing filter
-#- routing prefix-lists
-#- radius
+  - ip address
+  - ip dhcp-server lease
+  - ip dhcp-server network
 
-#- ip address
-#- ip dhcp-server lease
-#- ip dhcp-server network
-
-#- ip dns static
-#- ip firewall address-list
-#- ip firewall filter
-#- ip firewall mangle
-#- ip firewall nat
-#- ip ipsec peer
-#- ip ipsec policy
-- ip route
-#- ip traffic-flow target
+  - ip dns static
+  - ip firewall address-list
+  - ip firewall filter
+  - ip firewall mangle
+  - ip firewall nat
+  - ip ipsec peer
+  - ip ipsec policy
+  - ip route
+  - ip traffic-flow target

@@ -3,7 +3,7 @@ all:
   vars:
     ansible_python_interpreter: "/usr/bin/python3"
     ansible_user: shuu01
-    ansible_ssh_pass: pass
+    ansible_ssh_pass: password
 
   hosts:
     localhost:
@@ -19,4 +19,4 @@ all:
         master:
           mikrotik_vrrp_master: true
         backup:
-          #mikrotik_vrrp_master: true
+
